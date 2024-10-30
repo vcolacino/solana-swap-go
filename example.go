@@ -1,36 +1,4 @@
-
-# Solana Swap Go
-
-Go reimplementation of [solana-swap-python](https://github.com/YZYLAB/solana-swap-python.git)
-
-Easiest way to add Solana based swaps to your project.
-Uses the Solana Swap api from [https://docs.solanatracker.io](https://docs.solanatracker.io)
-
-## Now supporting
-- Raydium
-- Raydium CPMM
-- Pump.fun
-- Moonshot
-- Orca
-- Jupiter (Private Self Hosted API)
-
-## Installation
-
-```bash
-go get github.com/zewebdev1337/solana-swap-go
-```
-
-<!-- ## Demo
-
-Swap API is used live on:
-https://www.solanatracker.io
-
-*Add your site here* -->
-
-## Example Usage
-
-```go
-package main
+package solanatracker
 
 import (
 	"fmt"
@@ -39,7 +7,6 @@ import (
 
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
-	solanatracker "github.com/zewebdev1337/solana-swap-go"
 )
 
 func main() {
@@ -55,7 +22,7 @@ func main() {
 	rpcUrl := "https://solana-rpc.publicnode.com"
 
 	// Initialize a new Solana tracker with the keypair and RPC endpoint
-	tracker := solanatracker.NewSolanaTracker(keypair, rpcUrl)
+	tracker := NewSolanaTracker(keypair, rpcUrl)
 
 	priorityFee := 0.00005 // priorityFee requires a pointer, thus we store it in a variable
 
@@ -77,7 +44,7 @@ func main() {
 	maxRetries := uint(5) // maxRetries requires a pointer, thus we store it in a variable
 
 	// Define the options for the swap transaction
-	options := solanatracker.SwapOptions{
+	options := SwapOptions{
 		SendOptions: rpc.TransactionOpts{
 			SkipPreflight: true,
 			MaxRetries:    &maxRetries,
@@ -107,21 +74,3 @@ func main() {
 		fmt.Printf("Transaction finished in %.2f seconds\n", endTime.Sub(sendTime).Seconds())
 	}
 }
-```
-
-
-## FAQ
-
-#### Why should I use this API?
-
-SolanaTracker retrieves all raydium tokens the second they are available, so you can perform fast snipes.
-They also provide their own hosted Jupiter Swap API with no rate limits and faster market updates.
-
-#### Is there a fee for using this API?
-
-SolanaTracker charges a 0.5% fee on each successful transaction.
-
-*From the original README:*
-
-    Using this for a public bot or site with a high processing volume? 
-    Contact us via Discord or email (solanatracker@yzylab.com) and get the fee reduced to 0.1% (only if accepted.)
