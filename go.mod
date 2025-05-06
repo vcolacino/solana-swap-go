@@ -1,4 +1,4 @@
-module github.com/zewebdev1337/solana-swap-go
+module github.com/vcolacino/solana-swap-go
 
 go 1.23.1
 
