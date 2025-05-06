@@ -202,23 +202,28 @@ func (st *SolanaTracker) PerformSwap(swapResponse *SwapResponse, options SwapOpt
 	client := rpc.New(st.RPC)
 	ctx := context.Background()
 
-	// Decode base64 transaction
+	// Decode the base64-encoded transaction from the swap response
 	serializedTx, err := base64.StdEncoding.DecodeString(swapResponse.Txn)
 	if err != nil {
 		return "", fmt.Errorf("error decoding transaction: %w", err)
 	}
 
-	// Deserialize transaction
+	// Deserialize the transaction from its binary representation
 	tx, err := solana.TransactionFromDecoder(bin.NewBinDecoder(serializedTx))
 	if err != nil {
 		return "", fmt.Errorf("error deserializing transaction: %w", err)
 	}
 
-	// DO NOT override RecentBlockhash - tx is likely already signed
-	// If you re-set this, the existing signature will become invalid
-	// tx.Message.RecentBlockhash = latestBlockhash // ← DO NOT DO THIS
+	// Get the recent blockhash
+	recentBlockhash, err := client.GetLatestBlockhash(ctx, rpc.CommitmentFinalized)
+	if err != nil {
+		return "", fmt.Errorf("error getting recent blockhash: %w", err)
+	}
 
-	// Optionally sign if it's unsigned (not typical with SolanaTracker responses)
+	// Set the recent blockhash for the transaction
+	tx.Message.RecentBlockhash = recentBlockhash.Value.Blockhash
+
+	// Sign the transaction
 	_, err = tx.Sign(func(key solana.PublicKey) *solana.PrivateKey {
 		if st.Keypair.PublicKey().Equals(key) {
 			return &st.Keypair
@@ -229,12 +234,13 @@ func (st *SolanaTracker) PerformSwap(swapResponse *SwapResponse, options SwapOpt
 		return "", fmt.Errorf("error signing transaction: %w", err)
 	}
 
-	// Send and confirm
+	// Send and confirm the transaction
 	signature, err := st.sendAndConfirmTransaction(client, ctx, tx, options)
 	if err != nil {
 		return "", fmt.Errorf("error sending and confirming transaction: %w", err)
 	}
 
+	// If successful, return the signature
 	return signature.String(), nil
 }
 
