@@ -221,7 +221,7 @@ func (st *SolanaTracker) PerformSwap(swapResponse *SwapResponse, options SwapOpt
 	}
 
 	// Set the recent blockhash for the transaction
-	tx.Message.RecentBlockhash = recentBlockhash.Value.Blockhash
+	//tx.Message.RecentBlockhash = recentBlockhash.Value.Blockhash
 
 	// Sign the transaction
 	_, err = tx.Sign(func(key solana.PublicKey) *solana.PrivateKey {
