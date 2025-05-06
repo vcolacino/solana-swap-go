@@ -215,7 +215,7 @@ func (st *SolanaTracker) PerformSwap(swapResponse *SwapResponse, options SwapOpt
 	}
 
 	// Get the recent blockhash
-	recentBlockhash, err := client.GetRecentBlockhash(ctx, rpc.CommitmentFinalized)
+	recentBlockhash, err := client.GetLatestBlockhash(ctx, rpc.CommitmentFinalized)
 	if err != nil {
 		return "", fmt.Errorf("error getting recent blockhash: %w", err)
 	}
